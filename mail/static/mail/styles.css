@@ -1,3 +1,25 @@
 textarea {
     min-height: 400px;
 }
+#emails-view{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+#emails-view div{
+    border: solid black;
+    height: 5vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+#emails-view div p {
+    margin-left: 10px;
+}
+#compose-body{
+    height: 30vh;
+}
+#view-body{
+    height: 30vh;
+}
+

@@ -13,12 +13,23 @@
 
     <div id="emails-view">
     </div>
-
+    <div id="email-content">
+        <div class="form-group">
+            From: <input disabled class="form-control" id='view_sender'>
+        </div>
+        <div class="form-group">
+            To: <input id="view-recipients" disabled class="form-control">
+        </div>
+        <div class="form-group">
+            <input disabled class="form-control" id="view-subject" placeholder="Subject">
+        </div>
+        <textarea disabled class="form-control" id="view-body" placeholder="Body"></textarea>
+    </div>
     <div id="compose-view">
         <h3>New Email</h3>
         <form id="compose-form">
             <div class="form-group">
-                From: <input disabled class="form-control" value="{{ request.user.email }}">
+                From: <input disabled class="form-control" id='current_user'value="{{ request.user.email }}">
             </div>
             <div class="form-group">
                 To: <input id="compose-recipients" class="form-control">

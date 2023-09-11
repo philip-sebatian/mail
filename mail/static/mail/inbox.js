@@ -1,3 +1,4 @@
+//to check
 document.addEventListener('DOMContentLoaded', function() {
 
   // Use buttons to toggle between views
@@ -36,6 +37,48 @@ function load_mailbox(mailbox) {
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
   document.querySelector('#email-content').style.display='none';
+
+  if(mailbox=='sent'){
+    fetch('/emails/sent')
+  .then(response => response.json())
+  .then(emails => {
+      // Print email
+      console.log(emails);
+      emails.forEach(element => {
+        
+          let div_element=document.createElement('div');
+          div_element.addEventListener('click',()=>{
+            email_content()
+            fetch('/emails/'+element.id)
+            .then(responce=>{
+              return responce.json()
+            })
+            .then(mail=>{
+              document.querySelector('#view_sender').value=mail.sender
+                document.querySelector('#view-recipients').value=mail.recipients
+                document.querySelector('#view-subject').value=mail.subject
+                document.querySelector("#view-body").value=mail.body
+              
+              
+              
+            })
+          })
+          div_element.innerHTML=element.sender;
+          let body=document.createElement('p');
+          let time=document.createElement('p')
+          time.innerHTML=element.timestamp
+          body.innerHTML=element.subject
+          document.querySelector("#emails-view").append(div_element)
+          div_element.append(body)
+          div_element.append(time)
+        
+        
+      });
+  
+      // ... do something else with email ...
+  });
+  }
+  
   
   if(mailbox==='inbox'){
     
@@ -75,13 +118,19 @@ function load_mailbox(mailbox) {
                 document.querySelector("#view-body").value=mail.body
                 let button=document.createElement('button')
                 
-                let archive_btm=document.createElement('button')
                 
-                button.innerHTML='button'
+                let archive_btm=document.createElement('button')
+                button.classList.add("btn")
+                button.classList.add("btn-primary")
+                archive_btm.style.paddingLeft='10px'
+                archive_btm.classList.add("btn")
+                archive_btm.classList.add("btn-primary")
+                
+                button.innerHTML='Reply'
                 archive_btm.innerHTML="archive"
                 button.addEventListener('click',()=>{
                 compose_email()
-                document.querySelector("#compose-recipients").value=mail.recipients
+                document.querySelector("#compose-recipients").value=mail.sender
                 document.querySelector('#compose-subject').value='Re: '+mail.subject
                 document.querySelector('#compose-body').value=`On ${mail.timestamp} ${mail.sender} wrote: ${mail.body}`
                 
@@ -136,9 +185,12 @@ function load_mailbox(mailbox) {
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
   
 }
+//rediretc to sent
+
 //posting the form data 
 document.addEventListener("DOMContentLoaded",()=>{
-  document.querySelector("#compose-form").addEventListener('submit',()=>{
+  document.querySelector("#compose-form").addEventListener('submit',(event)=>{
+    event.preventDefault()
     let mail=document.querySelector('#compose-recipients').value
     let body=document.querySelector("#compose-body").value
     let subject=document.querySelector("#compose-subject").value
@@ -152,23 +204,28 @@ document.addEventListener("DOMContentLoaded",()=>{
   
       })
     })
-    .then(responce=>responce.JSON())
+    .then(responce=>responce.json())
     .then(result=>{
       console.log(result);
+      load_mailbox('sent')
     });
-    return false
+    
+    
   
   });
 });
 //inbox function
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelector('#inbox').addEventListener('click',()=>{
-    location.reload()
+    if(document.querySelector('#emails-view').firstChild){
+      
+      return
+    }
     fetch('/emails/inbox')
   .then(response => response.json())
   .then(emails => {
       // Print email
-      console.log(emails);
+      
       
       emails.forEach(element => {
         
@@ -186,12 +243,18 @@ document.addEventListener('DOMContentLoaded',()=>{
                 mail_div=document.createElement('div')
                 document.querySelector('#email-content').append(mail_div.innerHTML=`sender:${mail.sender}  body:${mail.body}`)
                 let button=document.createElement('button')
-                let archive_btm=document.createElement('button')
+                let archive_btm=document.createElement('Reply')
+                button.classList.add("btn")
+                button.classList.add("btn-primary")
+                archive_btm.classList.add("btn")
+                archive_btm.classList.add("btn-primary")
+                archive_btm.style.paddingLeft='10px'
                 button.innerHTML='button'
                 archive_btm.innerHTML="archive"
                 button.addEventListener('click',()=>{
                 compose_email()
-                document.querySelector("#compose-recipients").value=mail.recipients
+                
+                document.querySelector("#compose-recipients").value=mail.sender
                 document.querySelector('#compose-subject').value='Re: '+mail.subject
                 document.querySelector('#compose-body').value=`On ${mail.timestamp} ${mail.sender} wrote: ${mail.body}`
                 
@@ -235,7 +298,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 //sent emails function
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelector('#sent').addEventListener('click',()=>{
-    
+    if(document.querySelector('#emails-view').firstChild){
+      return
+    }
     fetch('/emails/sent')
   .then(response => response.json())
   .then(emails => {
@@ -305,13 +370,19 @@ document.addEventListener('DOMContentLoaded',()=>{
             
                 let button=document.createElement('button')
                 let archive_btm=document.createElement('button')
-                button.innerHTML='button'
+                button.classList.add("btn")
+                button.classList.add("btn-primary")
+                archive_btm.classList.add("btn")
+                archive_btm.classList.add("btn-primary")
+                
+                button.innerHTML='Reply'
                 archive_btm.innerHTML="unarchive"
                 button.addEventListener('click',()=>{
                 compose_email()
                 document.querySelector("#compose-recipients").value=mail.recipients
                 document.querySelector('#compose-subject').value='Re: '+mail.subject
                 document.querySelector('#compose-body').value=`On ${mail.timestamp} ${mail.sender} wrote: ${mail.body}`
+                
                 
               })
                 archive_btm.addEventListener('click',()=>{
@@ -355,71 +426,3 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 
-function get_email_page(mailbox){
-  document.addEventListener('DOMContentLoaded',()=>{
-  document.querySelector('#inbox').addEventListener('click',()=>{
-    fetch('/emails/inbox')
-  .then(response => response.json())
-  .then(emails => {
-      // Print email
-      console.log(emails);
-      
-      emails.forEach(element => {
-        
-          let div_element=document.createElement('div');
-          div_element.innerHTML=element.sender;
-          let body=document.createElement('p');
-          
-          div_element.addEventListener('click',()=>{
-            email_content();
-            fetch('/emails/'+element.id)
-            .then(responce=>{
-              return responce.json()
-            })
-            .then(mail=>{
-                mail_div=document.createElement('div')
-                document.querySelector('#email-content').append(mail_div.innerHTML=`sender:${mail.sender}  body:${mail.body}`)
-                let button=document.createElement('button')
-                let archive_btm=document.createElement('button')
-                button.innerHTML='button'
-                archive_btm.innerHTML="archive"
-                button.addEventListener('click',()=>{
-                compose_email()
-                document.querySelector("#compose-recipients").value=mail.recipients
-                document.querySelector('#compose-subject').value='Re: '+mail.subject
-                document.querySelector('#compose-body').value=`On ${mail.timestamp} ${mail.sender} wrote: ${mail.body}`
-                
-              })
-                archive_btm.addEventListener('click',()=>{
-                  fetch(`/emails/${mail.id}`,{
-                    method:"PUT",
-                    body:JSON.stringify(
-                      {
-                        archived:true
-                      }
-                    )
-
-                    
-                  });
-                  mail_div.remove()
-                })
-              if(!mail.archived){
-                document.querySelector('#email-content').append(archive_btm)
-
-              }
-              document.querySelector('#email-content').append(button)
-              })
-          })
-          body.innerHTML=element.body
-          document.querySelector("#emails-view").append(div_element)
-          document.querySelector("#emails-view").append(body)
-        
-        
-      });
-  
-      // ... do something else with email ...
-  });
-  });
-});
-
-}

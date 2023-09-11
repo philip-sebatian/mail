@@ -5,13 +5,17 @@ textarea {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 100px;
+    width: 90%;
 }
 #emails-view div{
-    border: solid black;
+    
     height: 5vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    border-radius: 0.5vh;
+    display: flex;
+    justify-content: center;
+    gap: 250px;
+    
 }
 #emails-view div p {
     margin-left: 10px;

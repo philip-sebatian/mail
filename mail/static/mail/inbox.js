@@ -1,4 +1,4 @@
-//to check
+
 document.addEventListener('DOMContentLoaded', function() {
 
   // Use buttons to toggle between views
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#compose').addEventListener('click', compose_email);
   
   
-
+//to check
   // By default, load the inbox
   load_mailbox('inbox');
 });
